@@ -100,13 +100,13 @@ const Documents = () => {
     }
   };
 
-  const handleDownload = async (doc: DocumentType) => {
+  cst handleDownload = async (doc: DocumentType) => {
     try {
       const { data, error } = await supabase.storage
         .from('documents')
         .download(doc.file_path);
 
-      if (error) throw error;
+      if (error) throw onerror;
 
       const url = URL.createObjectURL(data);
       const a = document.createElement('a');
