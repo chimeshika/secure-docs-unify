@@ -10,6 +10,7 @@ import Documents from "./pages/Documents";
 import Folders from "./pages/Folders";
 import SearchPage from "./pages/SearchPage";
 import Settings from "./pages/Settings";
+import UserManagement from "./pages/UserManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/dashboard/documents" element={<Documents />} />
           <Route path="/dashboard/folders" element={<Folders />} />
           <Route path="/dashboard/search" element={<SearchPage />} />
+          <Route path="/dashboard/users" element={<UserManagement />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Lock, Mail, User } from "lucide-react";
+import { Lock, Mail, User, Shield } from "lucide-react";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -58,18 +58,31 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 gradient-primary">
-      <Card className="w-full max-w-md shadow-elegant">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">
-            {isLogin ? "Sign in" : "Create an account"}
-          </CardTitle>
-          <CardDescription>
-            {isLogin
-              ? "Enter your credentials to access your documents"
-              : "Enter your details to create your account"}
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex flex-col">
+      <div className="bg-gradient-primary border-b-4 border-secondary py-6 px-6 shadow-lg">
+        <div className="max-w-7xl mx-auto flex items-center gap-4">
+          <div className="bg-background rounded-full p-4 shadow-gold">
+            <Shield className="h-16 w-16 text-primary" strokeWidth={2} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-primary-foreground tracking-tight">
+              Ministry of Public Services, Provincial Councils and Local Government
+            </h1>
+            <p className="text-base text-primary-foreground/90 font-medium mt-1">
+              Home Affairs Section – IT Branch (2025)
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex items-center justify-center p-6">
+        <Card className="w-full max-w-md shadow-elegant">
+          <CardHeader className="space-y-3">
+            <CardTitle className="text-2xl text-center">{isLogin ? "Sign In" : "Create Account"}</CardTitle>
+            <CardDescription className="text-center">
+              {isLogin ? "Enter your credentials to access the system" : "Register to access the document management system"}
+            </CardDescription>
+          </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
@@ -154,7 +167,16 @@ export const AuthForm = () => {
             )}
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
+      
+      <footer className="bg-primary text-primary-foreground py-4 px-6 border-t-2 border-secondary">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-sm font-medium">
+            Developed by IT Branch – Home Affairs Section (2025)
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
