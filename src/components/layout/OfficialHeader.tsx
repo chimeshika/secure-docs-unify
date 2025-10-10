@@ -12,7 +12,7 @@ export const OfficialHeader = () => {
             Ministry of Public Services, Provincial Councils and Local Government
           </h1>
           <p className="text-sm text-primary-foreground/90 font-medium">
-            Home Affairs Section – IT Branch (2025)
+            Home Affairs Section – IT Unit (2025)
           </p>
         </div>
       </div>
