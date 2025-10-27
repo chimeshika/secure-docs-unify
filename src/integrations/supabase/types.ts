@@ -14,44 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      departments: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           created_at: string | null
+          date_received: string | null
+          department_id: string | null
           file_path: string
           file_size: number
           file_type: string
           folder_id: string | null
           id: string
           owner_id: string
+          reference_number: string | null
+          remarks: string | null
           tags: string[] | null
           title: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          date_received?: string | null
+          department_id?: string | null
           file_path: string
           file_size: number
           file_type: string
           folder_id?: string | null
           id?: string
           owner_id: string
+          reference_number?: string | null
+          remarks?: string | null
           tags?: string[] | null
           title: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          date_received?: string | null
+          department_id?: string | null
           file_path?: string
           file_size?: number
           file_type?: string
           folder_id?: string | null
           id?: string
           owner_id?: string
+          reference_number?: string | null
+          remarks?: string | null
           tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "documents_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "documents_folder_id_fkey"
             columns: ["folder_id"]

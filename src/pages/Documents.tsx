@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Upload, FileText, Download, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { DocumentUploadDialog } from "@/components/documents/DocumentUploadDialog";
+import { logActivity } from "@/lib/activity-logger";
 
 interface DocumentType {
   id: string;
@@ -18,12 +19,20 @@ interface DocumentType {
   file_size: number;
   created_at: string;
   owner_id: string;
+  department_id: string | null;
+  date_received: string | null;
+  reference_number: string | null;
+  remarks: string | null;
+  departments?: {
+    name: string;
+    code: string;
+  };
 }
 
 const Documents = () => {
   const [documents, setDocuments] = useState<DocumentType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,7 +46,13 @@ const Documents = () => {
 
       const { data, error } = await supabase
         .from('documents')
-        .select('*')
+        .select(`
+          *,
+          departments (
+            name,
+            code
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -50,53 +65,6 @@ const Documents = () => {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('documents')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { error: dbError } = await supabase
-        .from('documents')
-        .insert({
-          title: file.name,
-          file_path: filePath,
-          file_type: file.type,
-          file_size: file.size,
-          owner_id: user.id,
-        });
-
-      if (dbError) throw dbError;
-
-      toast({
-        title: "Success",
-        description: "Document uploaded successfully",
-      });
-
-      fetchDocuments();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -114,6 +82,13 @@ const Documents = () => {
       a.download = doc.title;
       a.click();
       URL.revokeObjectURL(url);
+
+      await logActivity({
+        action: "download_document",
+        entityType: "document",
+        entityId: doc.id,
+        details: { title: doc.title },
+      });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -139,6 +114,13 @@ const Documents = () => {
         .eq('id', doc.id);
 
       if (dbError) throw dbError;
+
+      await logActivity({
+        action: "delete_document",
+        entityType: "document",
+        entityId: doc.id,
+        details: { title: doc.title },
+      });
 
       toast({
         title: "Success",
@@ -172,21 +154,12 @@ const Documents = () => {
             </p>
           </div>
           <div>
-            <Input
-              type="file"
-              id="file-upload"
-              className="hidden"
-              onChange={handleFileUpload}
-              disabled={uploading}
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-            />
             <Button
               className="gap-2"
-              onClick={() => document.getElementById('file-upload')?.click()}
-              disabled={uploading}
+              onClick={() => setUploadDialogOpen(true)}
             >
               <Upload className="h-4 w-4" />
-              {uploading ? "Uploading..." : "Upload Document"}
+              Upload Document
             </Button>
           </div>
         </div>
@@ -212,6 +185,8 @@ const Documents = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Title</TableHead>
+                    <TableHead>Department</TableHead>
+                    <TableHead>Reference</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Size</TableHead>
                     <TableHead>Uploaded</TableHead>
@@ -222,6 +197,16 @@ const Documents = () => {
                   {documents.map((doc) => (
                     <TableRow key={doc.id}>
                       <TableCell className="font-medium">{doc.title}</TableCell>
+                      <TableCell>
+                        {doc.departments ? (
+                          <Badge variant="outline">{doc.departments.code}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {doc.reference_number || <span className="text-muted-foreground">-</span>}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="secondary">{doc.file_type.split('/')[1]?.toUpperCase() || 'FILE'}</Badge>
                       </TableCell>
@@ -252,6 +237,12 @@ const Documents = () => {
             )}
           </CardContent>
         </Card>
+
+        <DocumentUploadDialog
+          open={uploadDialogOpen}
+          onOpenChange={setUploadDialogOpen}
+          onSuccess={fetchDocuments}
+        />
       </div>
     </DashboardLayout>
   );
