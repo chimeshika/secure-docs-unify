@@ -16,13 +16,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center mb-8 animate-fade-in">
-              <div className="bg-gradient-primary p-6 rounded-2xl shadow-elegant">
-                <img src={sriLankaLogo} alt="Sri Lanka Government" className="h-24 w-24 object-contain" />
-              </div>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground leading-tight animate-fade-in">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground leading-tight animate-fade-in mt-8">
               Official Document Management System
             </h1>
             
