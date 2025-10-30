@@ -11,7 +11,7 @@ export const OfficialHeader = () => {
           <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-tight">
             Document Management System – IT Unit (2025)
           </h1>
-          <p className="text-sm md:text-base text-white/95 font-medium mt-1">
+          <p className="text-sm md:text-base text-black font-medium mt-1">
             Ministry of Public Services, Provincial Councils and Local Government
           </p>
         </div>
