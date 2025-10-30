@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Lock, Mail, User, Shield } from "lucide-react";
+import { Lock, Mail, User } from "lucide-react";
+import sriLankaLogo from "@/assets/sri-lanka-logo.png";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -62,7 +63,7 @@ export const AuthForm = () => {
       <div className="bg-gradient-primary border-b-4 border-secondary py-6 px-6 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center gap-4">
           <div className="bg-background rounded-full p-4 shadow-gold">
-            <Shield className="h-16 w-16 text-primary" strokeWidth={2} />
+            <img src={sriLankaLogo} alt="Sri Lanka Government Logo" className="h-16 w-16 object-contain" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-black tracking-tight">
