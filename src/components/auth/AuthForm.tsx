@@ -65,10 +65,10 @@ export const AuthForm = () => {
             <Shield className="h-16 w-16 text-primary" strokeWidth={2} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-primary-foreground tracking-tight">
+            <h1 className="text-2xl font-bold text-black tracking-tight">
               Ministry of Public Services, Provincial Councils and Local Government
             </h1>
-            <p className="text-base text-primary-foreground/90 font-medium mt-1">
+            <p className="text-base text-black font-medium mt-1">
               Home Affairs Section – IT Branch (2025)
             </p>
           </div>
