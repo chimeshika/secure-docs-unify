@@ -33,7 +33,7 @@ const Index = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in">
               <Link to="/auth">
-                <Button size="lg" className="w-full sm:w-auto bg-gradient-primary text-white hover:opacity-90 shadow-elegant text-base px-8 py-6 font-semibold">
+                <Button size="lg" className="w-full sm:w-auto bg-gradient-primary text-black hover:opacity-90 shadow-elegant text-base px-8 py-6 font-semibold">
                   Access System
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -219,7 +219,7 @@ const Index = () => {
               Access the document management system and start organizing your official documents today
             </p>
             <Link to="/auth">
-              <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90 shadow-elegant text-base px-10 py-6 font-semibold">
+              <Button size="lg" className="bg-gradient-primary text-black hover:opacity-90 shadow-elegant text-base px-10 py-6 font-semibold">
                 Access System Now
                 <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
