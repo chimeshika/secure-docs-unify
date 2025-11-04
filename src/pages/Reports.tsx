@@ -7,6 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { format } from "date-fns";
 import { FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReportBuilder } from "@/components/reports/ReportBuilder";
 
 interface ActivityLog {
   id: string;
@@ -167,68 +169,82 @@ const Reports = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-foreground">Activity Reports</h2>
-            <p className="text-muted-foreground mt-2">
-              {isAdmin ? "View all system activity" : "View your activity history"}
-            </p>
-          </div>
-          <Button onClick={exportToCSV} className="gap-2" disabled={logs.length === 0}>
-            <Download className="h-4 w-4" />
-            Export to CSV
-          </Button>
+        <div>
+          <h2 className="text-3xl font-bold text-foreground">Reports</h2>
+          <p className="text-muted-foreground mt-2">
+            Generate custom reports and view activity logs
+          </p>
         </div>
 
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle>Activity Log</CardTitle>
-            <CardDescription>
-              Recent system activities and document operations
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-12">Loading...</div>
-            ) : logs.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No activity logs found</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date & Time</TableHead>
-                    <TableHead>User</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Entity Type</TableHead>
-                    <TableHead>Details</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {logs.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell className="font-medium">
-                        {format(new Date(log.created_at), "PPp")}
-                      </TableCell>
-                      <TableCell>
-                        {log.user_name || "Unknown"}
-                      </TableCell>
-                      <TableCell className="capitalize">
-                        {log.action.replace(/_/g, " ")}
-                      </TableCell>
-                      <TableCell className="capitalize">{log.entity_type}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
-                        {JSON.stringify(log.details)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="builder" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="builder">Report Builder</TabsTrigger>
+            <TabsTrigger value="activity">Activity Logs</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="builder" className="space-y-4">
+            <ReportBuilder />
+          </TabsContent>
+          
+          <TabsContent value="activity" className="space-y-4">
+            <div className="flex justify-end">
+              <Button onClick={exportToCSV} className="gap-2" disabled={logs.length === 0}>
+                <Download className="h-4 w-4" />
+                Export to CSV
+              </Button>
+            </div>
+
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle>Activity Log</CardTitle>
+                <CardDescription>
+                  {isAdmin ? "View all system activity" : "View your activity history"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="text-center py-12">Loading...</div>
+                ) : logs.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No activity logs found</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date & Time</TableHead>
+                        <TableHead>User</TableHead>
+                        <TableHead>Action</TableHead>
+                        <TableHead>Entity Type</TableHead>
+                        <TableHead>Details</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {logs.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell className="font-medium">
+                            {format(new Date(log.created_at), "PPp")}
+                          </TableCell>
+                          <TableCell>
+                            {log.user_name || "Unknown"}
+                          </TableCell>
+                          <TableCell className="capitalize">
+                            {log.action.replace(/_/g, " ")}
+                          </TableCell>
+                          <TableCell className="capitalize">{log.entity_type}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
+                            {JSON.stringify(log.details)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </DashboardLayout>
   );
