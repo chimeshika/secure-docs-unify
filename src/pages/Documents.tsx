@@ -19,6 +19,7 @@ interface DocumentType {
   file_size: number;
   created_at: string;
   owner_id: string;
+  folder_id: string | null;
   department_id: string | null;
   date_received: string | null;
   reference_number: string | null;
@@ -26,6 +27,9 @@ interface DocumentType {
   departments?: {
     name: string;
     code: string;
+  };
+  folders?: {
+    name: string;
   };
 }
 
@@ -51,6 +55,9 @@ const Documents = () => {
           departments (
             name,
             code
+          ),
+          folders (
+            name
           )
         `)
         .order('created_at', { ascending: false });
@@ -185,6 +192,7 @@ const Documents = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Title</TableHead>
+                    <TableHead>Folder</TableHead>
                     <TableHead>Department</TableHead>
                     <TableHead>Reference</TableHead>
                     <TableHead>Type</TableHead>
@@ -197,6 +205,13 @@ const Documents = () => {
                   {documents.map((doc) => (
                     <TableRow key={doc.id}>
                       <TableCell className="font-medium">{doc.title}</TableCell>
+                      <TableCell>
+                        {doc.folders ? (
+                          <Badge variant="secondary">{doc.folders.name}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">-</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         {doc.departments ? (
                           <Badge variant="outline">{doc.departments.code}</Badge>

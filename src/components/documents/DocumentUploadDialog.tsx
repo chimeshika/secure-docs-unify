@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,11 @@ interface Department {
   code: string;
 }
 
+interface Folder {
+  id: string;
+  name: string;
+}
+
 interface DocumentUploadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -25,22 +30,32 @@ interface DocumentUploadDialogProps {
 export const DocumentUploadDialog = ({ open, onOpenChange, onSuccess }: DocumentUploadDialogProps) => {
   const [uploading, setUploading] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const [formData, setFormData] = useState({
     file: null as File | null,
     departmentId: "",
+    folderId: "",
     dateReceived: "",
     referenceNumber: "",
     remarks: "",
   });
   const { toast } = useToast();
 
-  useState(() => {
-    const fetchDepartments = async () => {
-      const { data } = await supabase.from("departments").select("*").order("name");
-      if (data) setDepartments(data);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!open) return;
+      
+      const [deptResult, folderResult] = await Promise.all([
+        supabase.from("departments").select("*").order("name"),
+        supabase.from("folders").select("id, name").order("name")
+      ]);
+      
+      if (deptResult.data) setDepartments(deptResult.data);
+      if (folderResult.data) setFolders(folderResult.data);
     };
-    if (open) fetchDepartments();
-  });
+    
+    fetchData();
+  }, [open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,6 +84,7 @@ export const DocumentUploadDialog = ({ open, onOpenChange, onSuccess }: Document
           file_size: formData.file.size,
           owner_id: user.id,
           department_id: formData.departmentId || null,
+          folder_id: formData.folderId || null,
           date_received: formData.dateReceived || null,
           reference_number: formData.referenceNumber || null,
           remarks: formData.remarks || null,
@@ -96,6 +112,7 @@ export const DocumentUploadDialog = ({ open, onOpenChange, onSuccess }: Document
       setFormData({
         file: null,
         departmentId: "",
+        folderId: "",
         dateReceived: "",
         referenceNumber: "",
         remarks: "",
@@ -135,13 +152,32 @@ export const DocumentUploadDialog = ({ open, onOpenChange, onSuccess }: Document
           </div>
 
           <div>
+            <Label htmlFor="folder">Folder</Label>
+            <Select
+              value={formData.folderId}
+              onValueChange={(value) => setFormData({ ...formData, folderId: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select folder (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                {folders.map((folder) => (
+                  <SelectItem key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
             <Label htmlFor="department">Department</Label>
             <Select
               value={formData.departmentId}
               onValueChange={(value) => setFormData({ ...formData, departmentId: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select department" />
+                <SelectValue placeholder="Select department (optional)" />
               </SelectTrigger>
               <SelectContent>
                 {departments.map((dept) => (
