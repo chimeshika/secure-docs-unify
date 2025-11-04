@@ -12,6 +12,7 @@ import SearchPage from "./pages/SearchPage";
 import Settings from "./pages/Settings";
 import UserManagement from "./pages/UserManagement";
 import Reports from "./pages/Reports";
+import AccessRequests from "./pages/AccessRequests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/dashboard/search" element={<SearchPage />} />
           <Route path="/dashboard/users" element={<UserManagement />} />
           <Route path="/dashboard/reports" element={<Reports />} />
+          <Route path="/dashboard/access-requests" element={<AccessRequests />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

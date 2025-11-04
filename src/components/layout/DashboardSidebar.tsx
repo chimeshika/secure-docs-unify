@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FileText, FolderOpen, Search, Settings, LogOut, Home, Users, Shield, ClipboardList } from "lucide-react";
+import { FileText, FolderOpen, Search, Settings, LogOut, Home, Users, Shield, ClipboardList, Lock } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -43,6 +43,7 @@ export function DashboardSidebar() {
     { title: "Folders", url: "/dashboard/folders", icon: FolderOpen },
     { title: "Search", url: "/dashboard/search", icon: Search },
     { title: "Reports", url: "/dashboard/reports", icon: ClipboardList },
+    { title: "Access Requests", url: "/dashboard/access-requests", icon: Lock },
     ...(isAdmin ? [{ title: "User Management", url: "/dashboard/users", icon: Users }] : []),
     { title: "Settings", url: "/dashboard/settings", icon: Settings },
   ];

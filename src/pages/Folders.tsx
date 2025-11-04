@@ -3,18 +3,21 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { FolderPlus, Folder, Trash2 } from "lucide-react";
+import { FolderPlus, Folder, Trash2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
+import { SecretFolderToggle } from "@/components/folders/SecretFolderToggle";
+import { AccessRequestDialog } from "@/components/folders/AccessRequestDialog";
 
 interface FolderType {
   id: string;
   name: string;
   created_at: string;
   owner_id: string;
+  is_secret: boolean;
 }
 
 const Folders = () => {
@@ -22,11 +25,33 @@ const Folders = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [folderName, setFolderName] = useState("");
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState<FolderType | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    checkAdminStatus();
     fetchFolders();
   }, []);
+
+  const checkAdminStatus = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .single();
+
+      setIsAdmin(!!data);
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+    }
+  };
 
   const fetchFolders = async () => {
     try {
@@ -182,10 +207,15 @@ const Folders = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {folders.map((folder) => (
                   <Card key={folder.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
+                    <CardContent className="p-4 space-y-3">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                          <Folder className="h-8 w-8 text-primary" />
+                          <div className="relative">
+                            <Folder className="h-8 w-8 text-primary" />
+                            {folder.is_secret && (
+                              <Lock className="h-3 w-3 text-warning absolute -top-1 -right-1" />
+                            )}
+                          </div>
                           <div>
                             <p className="font-medium">{folder.name}</p>
                             <p className="text-xs text-muted-foreground">
@@ -201,6 +231,29 @@ const Folders = () => {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
+                      
+                      {isAdmin && (
+                        <SecretFolderToggle
+                          folderId={folder.id}
+                          isSecret={folder.is_secret}
+                          onToggle={fetchFolders}
+                        />
+                      )}
+                      
+                      {!isAdmin && folder.is_secret && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => {
+                            setSelectedFolder(folder);
+                            setRequestDialogOpen(true);
+                          }}
+                        >
+                          <Lock className="h-3 w-3 mr-2" />
+                          Request Access
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
@@ -209,6 +262,15 @@ const Folders = () => {
           </CardContent>
         </Card>
       </div>
+
+      {selectedFolder && (
+        <AccessRequestDialog
+          open={requestDialogOpen}
+          onOpenChange={setRequestDialogOpen}
+          folderId={selectedFolder.id}
+          folderName={selectedFolder.name}
+        />
+      )}
     </DashboardLayout>
   );
 };

@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_requests: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          folder_id: string
+          id: string
+          reason: string
+          requested_at: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          folder_id: string
+          id?: string
+          reason: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          folder_id?: string
+          id?: string
+          reason?: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_requests_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activity_logs: {
         Row: {
           action: string
@@ -148,6 +198,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          is_secret: boolean
           name: string
           owner_id: string
           parent_id: string | null
@@ -156,6 +207,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          is_secret?: boolean
           name: string
           owner_id: string
           parent_id?: string | null
@@ -164,6 +216,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          is_secret?: boolean
           name?: string
           owner_id?: string
           parent_id?: string | null
@@ -236,6 +289,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_folder_access: {
+        Args: { _folder_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
