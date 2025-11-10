@@ -6,6 +6,8 @@ import { DashboardSidebar } from "./DashboardSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { OfficialHeader } from "./OfficialHeader";
 import { OfficialFooter } from "./OfficialFooter";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -61,11 +63,23 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <div className="flex flex-1 w-full">
           <DashboardSidebar />
           <div className="flex-1 flex flex-col">
-            <header className="h-14 border-b border-border bg-card flex items-center px-6 shadow-sm">
-              <SidebarTrigger className="mr-4" />
-              <h1 className="text-lg font-semibold text-foreground">Document Management System</h1>
+            <header className="h-14 border-b border-border bg-card flex items-center px-4 md:px-6 shadow-sm">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="mr-3 md:mr-4 lg:hidden"
+                asChild
+              >
+                <SidebarTrigger>
+                  <Menu className="h-5 w-5" />
+                </SidebarTrigger>
+              </Button>
+              <SidebarTrigger className="hidden lg:flex mr-4" />
+              <h1 className="text-sm md:text-base lg:text-lg font-semibold text-foreground truncate">
+                Document Management System
+              </h1>
             </header>
-            <main className="flex-1 p-6 overflow-auto bg-background">{children}</main>
+            <main className="flex-1 p-4 md:p-6 overflow-auto bg-background">{children}</main>
           </div>
         </div>
         <OfficialFooter />
