@@ -7,11 +7,11 @@ export const OfficialHeader = () => {
         <div className="bg-background rounded-full p-3 shadow-gold flex-shrink-0">
           <img src={sriLankaLogo} alt="Sri Lanka Government Logo" className="h-14 w-14 object-contain" />
         </div>
-        <div className="flex-1">
-          <h1 className="text-xl md:text-2xl font-bold text-black tracking-tight leading-tight">
-            Document Management System – IT Unit (2025)
+        <div className="flex-1 min-w-0">
+          <h1 className="text-base md:text-lg lg:text-xl font-bold text-black tracking-tight leading-tight">
+            SecureDocs Document Management System – IT Unit (2025)
           </h1>
-          <p className="text-sm md:text-base text-black font-medium mt-1">
+          <p className="text-xs md:text-sm lg:text-base text-black font-medium mt-1">
             Ministry of Public Services, Provincial Councils and Local Government
           </p>
         </div>
