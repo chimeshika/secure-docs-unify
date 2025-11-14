@@ -59,20 +59,23 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar className={isCollapsed ? "w-14" : "w-64"} collapsible="icon">
-      <div className="p-4 border-b border-sidebar-border bg-sidebar-background">
+    <Sidebar 
+      className={`transition-all duration-300 ease-in-out ${isCollapsed ? "w-14" : "w-64"}`} 
+      collapsible="icon"
+    >
+      <div className="p-4 border-b border-sidebar-border bg-sidebar-background transition-all duration-300">
         {!isCollapsed ? (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 animate-fade-in">
             <div className="bg-sidebar-primary/10 rounded-full p-2">
               <Shield className="h-6 w-6 text-sidebar-primary" />
             </div>
-            <div>
-              <h2 className="font-semibold text-sidebar-foreground text-sm">SecureDocs</h2>
-              <p className="text-xs text-sidebar-foreground/70">Document System</p>
+            <div className="overflow-hidden">
+              <h2 className="font-semibold text-sidebar-foreground text-sm whitespace-nowrap">SecureDocs</h2>
+              <p className="text-xs text-sidebar-foreground/70 whitespace-nowrap">Document System</p>
             </div>
           </div>
         ) : (
-          <div className="flex justify-center">
+          <div className="flex justify-center animate-fade-in">
             <Shield className="h-6 w-6 text-sidebar-primary" />
           </div>
         )}
@@ -96,7 +99,7 @@ export function DashboardSidebar() {
                       }
                     >
                       <item.icon className="h-4 w-4" />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -111,7 +114,7 @@ export function DashboardSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleLogout}>
                   <LogOut className="h-4 w-4" />
-                  {!isCollapsed && <span>Logout</span>}
+                  {!isCollapsed && <span className="whitespace-nowrap overflow-hidden">Logout</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
