@@ -35,12 +35,12 @@ const DashboardContent = ({ children }: DashboardLayoutProps) => {
   });
 
   return (
-    <div {...handlers} className="min-h-screen flex flex-col w-full">
+    <>
       <OfficialHeader />
-      <div className="flex flex-1 w-full">
+      <div {...handlers} className="flex min-h-[calc(100vh-180px)] w-full">
         <DashboardSidebar />
-        <div className="flex-1 flex flex-col">
-          <header className="h-14 border-b border-border bg-card flex items-center px-4 md:px-6 shadow-sm">
+        <div className="flex-1 flex flex-col w-full">
+          <header className="h-14 border-b border-border bg-card flex items-center px-4 md:px-6 shadow-sm sticky top-0 z-20">
             <Button 
               variant="ghost" 
               size="icon" 
@@ -60,7 +60,7 @@ const DashboardContent = ({ children }: DashboardLayoutProps) => {
         </div>
       </div>
       <OfficialFooter />
-    </div>
+    </>
   );
 };
 
@@ -109,7 +109,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <SidebarProvider>
-      <DashboardContent>{children}</DashboardContent>
+      <div className="flex min-h-screen w-full flex-col">
+        <DashboardContent>{children}</DashboardContent>
+      </div>
     </SidebarProvider>
   );
 };
