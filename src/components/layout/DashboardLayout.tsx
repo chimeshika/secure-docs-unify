@@ -15,7 +15,7 @@ interface DashboardLayoutProps {
 }
 
 const DashboardContent = ({ children }: DashboardLayoutProps) => {
-  const { open, setOpen, isMobile } = useSidebar();
+  const { open, setOpen, isMobile, state } = useSidebar();
 
   // Swipe handlers for mobile
   const handlers = useSwipeable({
@@ -34,9 +34,14 @@ const DashboardContent = ({ children }: DashboardLayoutProps) => {
     delta: 50, // Minimum swipe distance
   });
 
+  // Calculate header margin based on sidebar state
+  const headerMargin = isMobile ? 'ml-0' : (state === 'collapsed' ? 'ml-14' : 'ml-64');
+
   return (
     <>
-      <OfficialHeader />
+      <div className={`transition-all duration-300 ease-in-out ${headerMargin}`}>
+        <OfficialHeader />
+      </div>
       <div {...handlers} className="flex min-h-[calc(100vh-180px)] w-full">
         <DashboardSidebar />
         <div className="flex-1 flex flex-col w-full">
