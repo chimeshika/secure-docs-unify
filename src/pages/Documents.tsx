@@ -204,7 +204,14 @@ const Documents = () => {
                 <TableBody>
                   {documents.map((doc) => (
                     <TableRow key={doc.id}>
-                      <TableCell className="font-medium">{doc.title}</TableCell>
+                      <TableCell className="font-medium">
+                        <button
+                          onClick={() => handleDownload(doc)}
+                          className="text-left hover:text-primary hover:underline transition-colors cursor-pointer"
+                        >
+                          {doc.title}
+                        </button>
+                      </TableCell>
                       <TableCell>
                         {doc.folders ? (
                           <Badge variant="secondary">{doc.folders.name}</Badge>
