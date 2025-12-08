@@ -52,7 +52,10 @@ export const AuthForm = () => {
         navigate("/dashboard");
       }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      const message = error.message?.includes("Failed to fetch") 
+        ? "Unable to connect. Please check your internet connection and try again."
+        : error.message || "An error occurred";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
