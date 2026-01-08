@@ -7,21 +7,72 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Mail, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Mail, Loader2, Save } from "lucide-react";
+import { z } from "zod";
+
+const profileSchema = z.object({
+  fullName: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+});
 
 const Settings = () => {
   const [user, setUser] = useState<any>(null);
+  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [resending, setResending] = useState(false);
 
   useEffect(() => {
-    const getUser = async () => {
+    const loadUserAndProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+        
+        if (profile) {
+          setFullName(profile.full_name);
+        }
+      }
       setLoading(false);
     };
-    getUser();
+    loadUserAndProfile();
   }, []);
+
+  const handleSaveChanges = async () => {
+    const validation = profileSchema.safeParse({ fullName });
+    
+    if (!validation.success) {
+      toast.error(validation.error.errors[0].message);
+      return;
+    }
+
+    if (!user) return;
+
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ full_name: fullName.trim() })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      // Also update auth metadata for consistency
+      await supabase.auth.updateUser({
+        data: { full_name: fullName.trim() }
+      });
+
+      toast.success("Profile updated successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleResendVerification = async () => {
     if (!user?.email) return;
@@ -67,7 +118,13 @@ const Settings = () => {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="Your name" defaultValue={user?.user_metadata?.full_name || ""} />
+              <Input 
+                id="name" 
+                placeholder="Your name" 
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                disabled={loading}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -112,7 +169,14 @@ const Settings = () => {
                 </div>
               )}
             </div>
-            <Button>Save Changes</Button>
+            <Button onClick={handleSaveChanges} disabled={saving || loading} className="gap-2">
+              {saving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              Save Changes
+            </Button>
           </CardContent>
         </Card>
 
