@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Lock, Mail, User } from "lucide-react";
+import { Lock, Mail, User, ArrowLeft } from "lucide-react";
 import sriLankaLogo from "@/assets/sri-lanka-logo.png";
 
+type AuthMode = "login" | "signup" | "forgot-password";
+
 export const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -22,7 +24,16 @@ export const AuthForm = () => {
     setLoading(true);
 
     try {
-      if (isLogin) {
+      if (mode === "forgot-password") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+
+        if (error) throw error;
+        
+        toast.success("Password reset email sent! Check your inbox.");
+        setMode("login");
+      } else if (mode === "login") {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -61,6 +72,31 @@ export const AuthForm = () => {
     }
   };
 
+  const getTitle = () => {
+    switch (mode) {
+      case "forgot-password": return "Reset Password";
+      case "signup": return "Create Account";
+      default: return "Sign In";
+    }
+  };
+
+  const getDescription = () => {
+    switch (mode) {
+      case "forgot-password": return "Enter your email to receive a password reset link";
+      case "signup": return "Register to access the document management system";
+      default: return "Enter your credentials to access the system";
+    }
+  };
+
+  const getButtonText = () => {
+    if (loading) return "Loading...";
+    switch (mode) {
+      case "forgot-password": return "Send Reset Link";
+      case "signup": return "Sign up";
+      default: return "Sign in";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex flex-col">
       <div className="bg-gradient-primary border-b-4 border-secondary py-6 px-6 shadow-lg">
@@ -82,14 +118,12 @@ export const AuthForm = () => {
       <div className="flex-1 flex items-center justify-center p-6">
         <Card className="w-full max-w-md shadow-elegant">
           <CardHeader className="space-y-3">
-            <CardTitle className="text-2xl text-center">{isLogin ? "Sign In" : "Create Account"}</CardTitle>
-            <CardDescription className="text-center">
-              {isLogin ? "Enter your credentials to access the system" : "Register to access the document management system"}
-            </CardDescription>
+            <CardTitle className="text-2xl text-center">{getTitle()}</CardTitle>
+            <CardDescription className="text-center">{getDescription()}</CardDescription>
           </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
+            {mode === "signup" && (
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <div className="relative">
@@ -123,35 +157,57 @@ export const AuthForm = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  required
-                  minLength={6}
-                />
+            {mode !== "forgot-password" && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  {mode === "login" && (
+                    <button
+                      type="button"
+                      onClick={() => setMode("forgot-password")}
+                      className="text-sm text-primary hover:underline"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10"
+                    required
+                    minLength={6}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Loading..." : isLogin ? "Sign in" : "Sign up"}
+              {getButtonText()}
             </Button>
           </form>
 
           <div className="mt-4 text-center text-sm">
-            {isLogin ? (
+            {mode === "forgot-password" ? (
+              <button
+                type="button"
+                onClick={() => setMode("login")}
+                className="text-primary hover:underline inline-flex items-center gap-1"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to sign in
+              </button>
+            ) : mode === "login" ? (
               <>
                 Don't have an account?{" "}
                 <button
                   type="button"
-                  onClick={() => setIsLogin(false)}
+                  onClick={() => setMode("signup")}
                   className="text-primary hover:underline"
                 >
                   Sign up
@@ -162,7 +218,7 @@ export const AuthForm = () => {
                 Already have an account?{" "}
                 <button
                   type="button"
-                  onClick={() => setIsLogin(true)}
+                  onClick={() => setMode("login")}
                   className="text-primary hover:underline"
                 >
                   Sign in
