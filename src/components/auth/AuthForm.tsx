@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Lock, Mail, User, ArrowLeft } from "lucide-react";
 import sriLankaLogo from "@/assets/sri-lanka-logo.png";
+import { OfficialFooter } from "@/components/layout/OfficialFooter";
 
 type AuthMode = "login" | "signup" | "forgot-password";
 
@@ -230,13 +231,7 @@ export const AuthForm = () => {
         </Card>
       </div>
       
-      <footer className="bg-primary text-primary-foreground py-4 px-6 border-t-2 border-secondary">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm font-medium">
-            Developed by IT Branch – Home Affairs Section (2025)
-          </p>
-        </div>
-      </footer>
+      <OfficialFooter />
     </div>
   );
 };
