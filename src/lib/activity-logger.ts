@@ -5,6 +5,7 @@ export type ActivityAction =
   | "download_document"
   | "delete_document"
   | "update_document"
+  | "update_document_status"
   | "create_folder"
   | "delete_folder"
   | "login"

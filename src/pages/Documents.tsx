@@ -2,14 +2,18 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, FileText, Download, Trash2 } from "lucide-react";
+import { Upload, FileText, Download, Trash2, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { DocumentUploadDialog } from "@/components/documents/DocumentUploadDialog";
+import { DocumentStatusBadge } from "@/components/documents/DocumentStatusBadge";
+import { DocumentStatusDialog } from "@/components/documents/DocumentStatusDialog";
 import { logActivity } from "@/lib/activity-logger";
+
+type DocumentStatus = "received" | "processing" | "completed";
 
 interface DocumentType {
   id: string;
@@ -24,6 +28,9 @@ interface DocumentType {
   date_received: string | null;
   reference_number: string | null;
   remarks: string | null;
+  status: DocumentStatus;
+  status_notes: string | null;
+  status_updated_at: string | null;
   departments?: {
     name: string;
     code: string;
@@ -37,6 +44,8 @@ const Documents = () => {
   const [documents, setDocuments] = useState<DocumentType[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<DocumentType | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -192,11 +201,11 @@ const Documents = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Title</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Folder</TableHead>
                     <TableHead>Department</TableHead>
                     <TableHead>Reference</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Size</TableHead>
                     <TableHead>Uploaded</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -210,6 +219,17 @@ const Documents = () => {
                           className="text-left hover:text-primary hover:underline transition-colors cursor-pointer"
                         >
                           {doc.title}
+                        </button>
+                      </TableCell>
+                      <TableCell>
+                        <button
+                          onClick={() => {
+                            setSelectedDocument(doc);
+                            setStatusDialogOpen(true);
+                          }}
+                          className="cursor-pointer hover:opacity-80 transition-opacity"
+                        >
+                          <DocumentStatusBadge status={doc.status} />
                         </button>
                       </TableCell>
                       <TableCell>
@@ -232,10 +252,20 @@ const Documents = () => {
                       <TableCell>
                         <Badge variant="secondary">{doc.file_type.split('/')[1]?.toUpperCase() || 'FILE'}</Badge>
                       </TableCell>
-                      <TableCell>{formatFileSize(doc.file_size)}</TableCell>
                       <TableCell>{format(new Date(doc.created_at), 'PP')}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedDocument(doc);
+                              setStatusDialogOpen(true);
+                            }}
+                            title="Update Status"
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -263,6 +293,13 @@ const Documents = () => {
         <DocumentUploadDialog
           open={uploadDialogOpen}
           onOpenChange={setUploadDialogOpen}
+          onSuccess={fetchDocuments}
+        />
+
+        <DocumentStatusDialog
+          open={statusDialogOpen}
+          onOpenChange={setStatusDialogOpen}
+          document={selectedDocument}
           onSuccess={fetchDocuments}
         />
       </div>
