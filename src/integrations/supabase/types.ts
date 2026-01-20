@@ -134,6 +134,9 @@ export type Database = {
           owner_id: string
           reference_number: string | null
           remarks: string | null
+          status: Database["public"]["Enums"]["document_status"]
+          status_notes: string | null
+          status_updated_at: string | null
           tags: string[] | null
           title: string
           updated_at: string | null
@@ -150,6 +153,9 @@ export type Database = {
           owner_id: string
           reference_number?: string | null
           remarks?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          status_notes?: string | null
+          status_updated_at?: string | null
           tags?: string[] | null
           title: string
           updated_at?: string | null
@@ -166,6 +172,9 @@ export type Database = {
           owner_id?: string
           reference_number?: string | null
           remarks?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          status_notes?: string | null
+          status_updated_at?: string | null
           tags?: string[] | null
           title?: string
           updated_at?: string | null
@@ -303,6 +312,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "officer"
+      document_status: "received" | "processing" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -431,6 +441,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "officer"],
+      document_status: ["received", "processing", "completed"],
     },
   },
 } as const
