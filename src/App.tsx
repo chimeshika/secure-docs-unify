@@ -14,7 +14,6 @@ import Settings from "./pages/Settings";
 import UserManagement from "./pages/UserManagement";
 import Reports from "./pages/Reports";
 import AccessRequests from "./pages/AccessRequests";
-import Equipment from "./pages/Equipment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,7 +36,6 @@ const App = () => (
           <Route path="/dashboard/reports" element={<Reports />} />
           <Route path="/dashboard/access-requests" element={<AccessRequests />} />
           <Route path="/dashboard/settings" element={<Settings />} />
-          <Route path="/dashboard/equipment" element={<Equipment />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
